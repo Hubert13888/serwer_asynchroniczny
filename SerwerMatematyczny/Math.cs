@@ -5,29 +5,24 @@ using System.Net.Sockets;
 /// Clasa zawiera metody umożliwiające odczyt i zapis danych z i do serwera
 /// </summary>
 public class Server_Operations {
-    protected NetworkStream stream;
-    protected BinaryWriter writer;
-    private byte[] clear = new byte[1024];
     /// <summary>
     /// Nadanie wartości writerowi - obiektowi służącemu do łatwiejszej obsługi wyjścia
     /// </summary>
     /// <param name="stream">Strumień danych typu NetworkStream</param>
-    public Server_Operations(NetworkStream stream) {
-        this.stream = stream;
-             writer = new BinaryWriter(stream);
+    public Server_Operations() {
     }
     /// <summary>
     /// funkcja zapisu wraz z impementacją dla różnego typu zmienych
     /// </summary>
     /// <param name="msg">Tekst do wysłania</param>
-    public void Send_message(string msg) {
+    public void Send_message(BinaryWriter writer, NetworkStream stream, string msg) {
         writer.Write(msg);
     }
-    public void Send_message(int msg)
+    public void Send_message(BinaryWriter writer, NetworkStream stream, int msg)
     {
         writer.Write(msg);
     }
-    public void Send_message(float msg)
+    public void Send_message(BinaryWriter writer, NetworkStream stream, float msg)
     {
         writer.Write(msg);
     }
@@ -35,10 +30,13 @@ public class Server_Operations {
     /// Funkcja służąca do pobierania danych wpisanych do użytkownika
     /// </summary>
     /// <returns>Zwraca numer</returns>
-    public int Get_int()
+    public int Get_int(NetworkStream stream)
     {
+        byte[] clear = new byte[1024];
         byte[] buffer = new byte[1024];
+
         int msg_len = stream.Read(buffer, 0, 1024);
+
         string result = "";
         /*
          * Czytany jest tekst właściwy do bufora, a następnie czyszczony niepotrzebny enter. 
